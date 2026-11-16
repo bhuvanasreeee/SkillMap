@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_login import login_required as require_login
@@ -5,7 +6,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "skillmap-secret-key-change-later"
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY", "skillmap-local-development-key"
+)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -48,7 +51,8 @@ def load_user(user_id):
 
 # Database connection
 def get_db_connection():
-    conn = sqlite3.connect("skillmap.db")
+    db_path = os.environ.get("DATABASE_PATH", "skillmap.db")
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -354,7 +358,8 @@ def edit_skill(skill_id):
     conn = get_db_connection()
 
     skill = conn.execute(
-        "SELECT * FROM skills WHERE id = ?", (skill_id,)
+        "SELECT * FROM skills WHERE id = ? AND user_id = ?",
+        (skill_id, current_user.id)
     ).fetchone()
 
     if skill is None:
@@ -407,7 +412,8 @@ def delete_skill(skill_id):
     conn = get_db_connection()
 
     skill = conn.execute(
-        "SELECT * FROM skills WHERE id = ?", (skill_id,)
+        "SELECT * FROM skills WHERE id = ? AND user_id = ?", 
+        (skill_id, current_user.id)
     ).fetchone()
 
     if skill:
@@ -417,7 +423,8 @@ def delete_skill(skill_id):
         )
 
         conn.execute(
-            "DELETE FROM skills WHERE id = ?", (skill_id,)
+            "DELETE FROM skills WHERE id = ? AND user_id = ?",
+            (skill_id, current_user.id)
         )
 
     conn.commit()
@@ -433,7 +440,8 @@ def goals():
     conn = get_db_connection()
 
     goals = conn.execute(
-        "SELECT * FROM goals ORDER BY id DESC"
+        "SELECT * FROM goals WHERE user_id = ? ORDER BY id DESC",
+        (current_user.id)
     ).fetchall()
 
     conn.close()
@@ -485,7 +493,8 @@ def edit_goal(goal_id):
     conn = get_db_connection()
 
     goal = conn.execute(
-        "SELECT * FROM goals WHERE id = ?", (goal_id,)
+        "SELECT * FROM goals WHERE id = ? AND user_id = ?",
+        (goal_id, current_user.id)
     ).fetchone()
 
     if goal is None:
@@ -513,8 +522,8 @@ def edit_goal(goal_id):
             """UPDATE goals
                SET title = ?, description = ?,
                    target_date = ?, progress = ?
-               WHERE id = ?""",
-            (title, description, target_date, progress, goal_id)
+               WHERE id = ? AND user_id = ?""",
+            (title, description, target_date, progress, goal_id, current_user.id)
         )
 
         if progress != old_progress:
@@ -546,7 +555,8 @@ def delete_goal(goal_id):
     conn = get_db_connection()
 
     goal = conn.execute(
-        "SELECT * FROM goals WHERE id = ?", (goal_id,)
+        "SELECT * FROM goals WHERE id = ? AND user_id = ?",
+        (goal_id, current_user.id)
     ).fetchone()
 
     if goal:
@@ -556,7 +566,8 @@ def delete_goal(goal_id):
         )
 
         conn.execute(
-            "DELETE FROM goals WHERE id = ?", (goal_id,)
+            "DELETE FROM goals WHERE id = ? AND user_id = ?",
+        (goal_id, current_user.id)
         )
 
     conn.commit()
