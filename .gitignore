@@ -2,6 +2,6 @@ venv/
 __pycache__/
 *.pyc
 *.db
-app_backup.py
+app_bakup.py
 create_admin.py
 .env
