@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Skill - SkillMap</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="main-content" style="margin-left:0;">
+
+    <header>
+        <div>
+            <h1>Edit Skill</h1>
+            <p>Update your skill details and learning progress.</p>
+        </div>
+        <a href="/skills" class="profile">Back to My Skills</a>
+    </header>
+
+    <div class="panel">
+        <h2>Update Skill Details</h2>
+
+        <form method="POST">
+
+            <label>Skill Name</label>
+            <input type="text" name="name"
+                   value="{{ skill.name }}" required>
+
+            <label>Category</label>
+            <select name="category" required>
+                <option value="Programming"
+                    {% if skill.category == "Programming" %}selected{% endif %}>
+                    Programming
+                </option>
+
+                <option value="Database"
+                    {% if skill.category == "Database" %}selected{% endif %}>
+                    Database
+                </option>
+
+                <option value="Web Development"
+                    {% if skill.category == "Web Development" %}selected{% endif %}>
+                    Web Development
+                </option>
+
+                <option value="Other"
+                    {% if skill.category == "Other" %}selected{% endif %}>
+                    Other
+                </option>
+            </select>
+
+            <label>Progress (%)</label>
+            <input type="number" name="progress"
+                   min="0" max="100"
+                   value="{{ skill.progress }}" required>
+
+            <button type="submit">Save Changes</button>
+
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

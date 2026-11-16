@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillMap - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>✦ SkillMap</h2>
+    <p class="menu-title">MAIN MENU</p>
+
+    <a class="active" href="/">▦ Dashboard</a>
+    <a href="/skills">▣ My Skills</a>
+    <a href="/goals">◷ Learning Goals</a>
+    <a href="/analytics">▤ Analytics</a>
+    <a href="/weekly-report">▧ Weekly Report</a>
+
+    <div class="sidebar-bottom">
+        <p>Track Your Skills.</p>
+        <p>Measure Your Growth.</p>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <header>
+        <div>
+            <h1>Dashboard</h1>
+            <p>Welcome back! Here's your learning overview.</p>
+        </div>
+        <div class="profile">
+            {{ current_user.username }} ({{ current_user.role|capitalize }})
+            <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+    </header>
+
+    <section class="welcome-card">
+        <div>
+            <h2>Keep Growing Your Skills!</h2>
+            <p>Every small step brings you closer to your goals.</p>
+        </div>
+    </section>
+
+    <!-- Dynamic Summary Cards -->
+    <section class="stats">
+
+        <div class="card">
+            <p>Total Skills</p>
+            <h2>{{ total_skills }}</h2>
+            <span>Skills you're learning</span>
+        </div>
+
+        <div class="card">
+            <p>Completed Skills</p>
+            <h2>{{ completed_skills }}</h2>
+            <span>Successfully completed</span>
+        </div>
+
+        <div class="card">
+            <p>Overall Progress</p>
+            <h2>{{ overall_progress }}%</h2>
+            <span>Learning achievement</span>
+        </div>
+
+        <div class="card">
+            <p>Active Goals</p>
+            <h2>{{ active_goals }}</h2>
+            <span>Goals in progress</span>
+        </div>
+
+    </section>
+
+    <!-- Dynamic Recent Skills -->
+    <section class="content-section">
+
+        <div class="panel">
+            <h2>Recent Skills</h2>
+
+            {% if recent_skills %}
+
+                {% for skill in recent_skills %}
+
+                    <div class="skill">
+
+                        <div class="skill-info">
+                            <span>{{ skill.name }}</span>
+                            <span>{{ skill.progress }}%</span>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-fill"
+                                 data-progress="{{ skill.progress }}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p class="activity-text">
+                    No skills added yet. Start by adding your first skill!
+                </p>
+
+                <a href="/skills">Add Your First Skill</a>
+
+            {% endif %}
+
+        </div>
+
+        <div class="panel">
+            <h2>Learning Activity</h2>
+
+            <p class="activity-text">
+                Your learning journey starts with consistency.
+                Keep updating your skills and tracking your progress!
+            </p>
+
+            <div class="activity-icon">📚</div>
+        </div>
+
+    </section>
+
+    <footer>
+        © 2026 SkillMap | Track Your Skills. Measure Your Growth.
+    </footer>
+
+</div>
+
+<script>
+document.querySelectorAll(".progress-fill").forEach(bar => {
+    let progress = Number(bar.dataset.progress) || 0;
+    progress = Math.min(100, Math.max(0, progress));
+    bar.style.width = progress + "%";
+});
+</script>
+
+</body>
+</html>

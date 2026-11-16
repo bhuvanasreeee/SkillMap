@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - SkillMap</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>✦ SkillMap</h2>
+
+    <p class="menu-title">MAIN MENU</p>
+
+    <a href="/">▦ Dashboard</a>
+    <a href="/skills">▣ My Skills</a>
+    <a href="/goals">◷ Learning Goals</a>
+    <a href="/analytics" class="active">▤ Analytics</a>
+    <a href="/weekly-report">▧ Weekly Report</a>
+
+    <div class="sidebar-bottom">
+        <p>Track Your Skills.</p>
+        <p>Measure Your Growth.</p>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <header>
+        <div>
+            <h1>Analytics</h1>
+            <p>Understand your learning progress and performance.</p>
+        </div>
+
+        <a href="/" class="profile">Back to Dashboard</a>
+    </header>
+
+    <section class="stats">
+
+        <div class="card">
+            <p>Total Skills</p>
+            <h2>{{ total_skills }}</h2>
+            <span>Skills you're learning</span>
+        </div>
+
+        <div class="card">
+            <p>Completed Skills</p>
+            <h2>{{ completed_skills }}</h2>
+            <span>Successfully completed</span>
+        </div>
+
+        <div class="card">
+            <p>Average Progress</p>
+            <h2>{{ average_progress }}%</h2>
+            <span>Overall learning progress</span>
+        </div>
+
+        <div class="card">
+            <p>Total Goals</p>
+            <h2>{{ total_goals }}</h2>
+            <span>Your learning targets</span>
+        </div>
+
+    </section>
+
+    <section class="content-section">
+
+        <div class="panel">
+            <h2>Skill Progress Overview</h2>
+
+            {% if skills %}
+                <canvas
+                     id="skillChart"
+                     data-labels='{{ skills | map(attribute="name") | list | tojson }}'
+                      data-progress='{{ skills | map(attribute="progress") | list | tojson }}'>
+</canvas>
+            {% else %}
+                <p>No skills available. Add skills to view analytics.</p>
+            {% endif %}
+        </div>
+
+        <div class="panel">
+            <h2>Learning Summary</h2>
+
+            <p class="activity-text">
+                You are currently learning {{ total_skills }} skills.
+                You have completed {{ completed_skills }} skills.
+                Your average progress is {{ average_progress }}%.
+                Keep updating your skills to improve your performance.
+            </p>
+        </div>
+
+    </section>
+
+    <footer>
+        © 2026 SkillMap | Track Your Skills. Measure Your Growth.
+    </footer>
+
+</div>
+
+{% if skills %}
+<script>
+    const chartCanvas = document.getElementById("skillChart");
+
+    const skillNames = JSON.parse(
+        chartCanvas.dataset.labels
+    );
+
+    const skillProgress = JSON.parse(
+        chartCanvas.dataset.progress
+    );
+
+    new Chart(chartCanvas, {
+        type: "bar",
+
+        data: {
+            labels: skillNames,
+
+            datasets: [{
+                label: "Progress (%)",
+                data: skillProgress,
+                backgroundColor: "#3478F6",
+                borderRadius: 6
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: "Progress (%)"
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+
+</body>
+</html>
